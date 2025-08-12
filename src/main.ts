@@ -1,5 +1,5 @@
 // For more information, see https://crawlee.dev/
-import { PlaywrightCrawler } from 'crawlee';
+import { Dataset, PlaywrightCrawler } from 'crawlee';
 
 import { router } from './routes.js';
 
@@ -13,3 +13,7 @@ const crawler = new PlaywrightCrawler({
 });
 
 await crawler.run([startUrl!]);
+
+// Export the entirety of the dataset to a single file in
+// the default key-value store under the key "videos"
+await Dataset.exportToJSON('videos');
