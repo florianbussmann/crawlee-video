@@ -1,6 +1,6 @@
-# Crawlee + PlaywrightCrawler + TypeScript project
+# crawlee-video
 
-This template is a production ready boilerplate for developing with `PlaywrightCrawler`. Use this to bootstrap your projects using the most up-to-date code.
+[Crawlee](https://crawlee.dev) + PlaywrightCrawler + TypeScript example project using template for developing with `PlaywrightCrawler`. Use this to bootstrap your projects using the most up-to-date code.
 
 If you're looking for examples or want to learn more visit:
 
