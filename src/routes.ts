@@ -60,7 +60,7 @@ router.addHandler('detail', async ({ request, page, log, pushData }) => {
         items.forEach(item => {
             const label = item.childNodes[0].textContent?.trim().replace(':', '') || '';
 
-            const links = Array.from(item.querySelectorAll('a')).map(a => a.textContent?.trim()).filter(Boolean);
+            const links = Array.from(item.querySelectorAll('a')).map(a => a.textContent?.trim()).filter((t): t is string => !!t);
 
             if (label.toLowerCase() === 'categories') {
                 result.categories = links;
