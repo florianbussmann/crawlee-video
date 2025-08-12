@@ -2,10 +2,12 @@ import { createPlaywrightRouter } from 'crawlee';
 
 export const router = createPlaywrightRouter();
 
-router.addDefaultHandler(async ({ enqueueLinks, log }) => {
+router.addDefaultHandler(async ({ enqueueLinks, request, log }) => {
+    log.info(`Processing ${request.url}...`);
+
     log.info(`enqueueing new URLs`);
     await enqueueLinks({
-        globs: ['https://crawlee.dev/**'],
+        selector: '.list-videos > div > .item > a',
         label: 'detail',
     });
 });
