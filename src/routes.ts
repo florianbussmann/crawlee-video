@@ -2,12 +2,45 @@ import { createPlaywrightRouter } from 'crawlee';
 
 export const router = createPlaywrightRouter();
 
-router.addDefaultHandler(async ({ enqueueLinks, request, log }) => {
+router.addDefaultHandler(async ({ enqueueLinks, page, request, log }) => {
     log.info(`Processing ${request.url}...`);
+
+    const itemSelector = '.list-videos > div > .item > a';
+    const loadMoreBtnSelector = 'div.load-more > a[data-action="ajax"]';
+    const maxPages = 5;
+    let clicks = 0;
+
+    while (clicks < maxPages) {
+        const loadMoreBtn = await page.$(loadMoreBtnSelector);
+        if (!loadMoreBtn) {
+            log.info('No more Load More button found, finished loading all items.');
+            break;
+        }
+
+        const prevCount = await page.$$eval(itemSelector, els => els.length);
+
+        log.info(prevCount.toString());
+        await loadMoreBtn.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(1500);
+        await page.evaluate((btnSelector) => {
+            const btn: HTMLElement = document.querySelector(btnSelector)!;
+            btn?.click();
+        }, loadMoreBtnSelector);
+
+        await page.waitForFunction(
+            ({ selector, prev }) => document.querySelectorAll(selector).length > prev,
+            {
+                selector: itemSelector,
+                prev: prevCount,
+            }
+        );
+
+        clicks++;
+    }
 
     log.info(`enqueueing new URLs`);
     await enqueueLinks({
-        selector: '.list-videos > div > .item > a',
+        selector: itemSelector,
         label: 'detail',
     });
 });

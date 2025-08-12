@@ -9,7 +9,7 @@ const startUrl = process.env.CRAWL_TARGET;
 
 const crawler = new PlaywrightCrawler({
     requestHandler: router,
-    maxRequestsPerCrawl: 4,
+    maxRequestsPerCrawl: 16,
 });
 
 await crawler.run([startUrl!]);
