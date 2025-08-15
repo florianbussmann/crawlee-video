@@ -4,6 +4,8 @@
 
 For subsequent runs use `npx crawlee run --no-purge`. Videos detected from crawl will be listed under `storage/key_value_stores/default/videos.json`.
 
+Crawl results can be archived to sqlite3 database (storage/archive.db) using `npm run archive`.
+
 If you're looking for other examples or want to learn more visit:
 
 - [Documentation](https://crawlee.dev/js/api/playwright-crawler/class/PlaywrightCrawler)
