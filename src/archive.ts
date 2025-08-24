@@ -16,6 +16,7 @@ async function main() {
             url TEXT NOT NULL UNIQUE,
             title TEXT,
             categories TEXT,
+            models TEXT,
             tags TEXT
         )
     `);
@@ -24,8 +25,8 @@ async function main() {
     let entries = JSON.parse(content);
 
     const insert = db.prepare(`
-        INSERT OR IGNORE INTO videos (url, title, categories, tags)
-        VALUES (@url, @title, @categories, @tags)
+        INSERT OR REPLACE INTO videos (url, title, categories, models, tags)
+        VALUES (@url, @title, @categories, @models, @tags)
         `);
 
     for (const e of entries) {
@@ -33,6 +34,7 @@ async function main() {
             url: e.url,
             title: e.title,
             categories: JSON.stringify(e.info?.categories || []),
+            models: JSON.stringify(e.info?.models || []),
             tags: JSON.stringify(e.info?.tags || [])
         });
     }

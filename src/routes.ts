@@ -55,8 +55,9 @@ router.addHandler('detail', async ({ request, page, log, pushData }) => {
     log.info(`${title}`, { url: request.loadedUrl });
 
     const info = await page.$$eval(process.env.INFO_SELECTOR || 'div.info > div.item', (items) => {
-        const result: { categories: string[]; tags: string[] } = {
+        const result: { categories: string[]; models: string[]; tags: string[] } = {
             categories: [],
+            models: [],
             tags: [],
         };
 
@@ -71,6 +72,8 @@ router.addHandler('detail', async ({ request, page, log, pushData }) => {
 
             if (label.toLowerCase() === 'categories') {
                 result.categories = links;
+            } else if (label.toLowerCase() === 'models') {
+                result.models = links;
             } else if (label.toLowerCase() === 'tags') {
                 result.tags = links;
             }
