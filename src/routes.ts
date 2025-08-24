@@ -1,11 +1,14 @@
 import { createPlaywrightRouter } from 'crawlee';
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 export const router = createPlaywrightRouter();
 
 router.addDefaultHandler(async ({ enqueueLinks, page, request, log }) => {
     log.info(`Processing ${request.url}...`);
 
-    const itemSelector = '.list-videos > div > .item > a';
+    const itemSelector = process.env.ITEM_SELECTOR || '.list-videos > div > .item > a';
     const loadMoreBtnSelector = 'div.load-more > a[data-action="ajax"]';
     const maxPages = 5;
     let clicks = 0;
@@ -51,16 +54,20 @@ router.addHandler('detail', async ({ request, page, log, pushData }) => {
     const title = await page.title();
     log.info(`${title}`, { url: request.loadedUrl });
 
-    const info = await page.$$eval('div.info > div.item', (items) => {
+    const info = await page.$$eval(process.env.INFO_SELECTOR || 'div.info > div.item', (items) => {
         const result: { categories: string[]; tags: string[] } = {
             categories: [],
             tags: [],
         };
 
         items.forEach(item => {
-            const label = item.childNodes[0].textContent?.trim().replace(':', '') || '';
+            let labelNode: any = item.children[0];
+            if (labelNode.tagName.toLowerCase() === 'a') {
+                labelNode = item.childNodes[0];
+            }
+            const label = labelNode?.textContent?.trim().replace(':', '') || '';
 
-            const links = Array.from(item.querySelectorAll('a')).map(a => a.textContent?.trim()).filter((t): t is string => !!t);
+            const links = Array.from(item.querySelectorAll('a')).filter(a => a.getAttribute('href') !== '#').map(a => a.textContent?.trim()).filter((t): t is string => !!t);
 
             if (label.toLowerCase() === 'categories') {
                 result.categories = links;
