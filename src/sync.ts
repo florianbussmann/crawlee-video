@@ -1,29 +1,44 @@
-import { Configuration } from 'crawlee';
-
-const config = new Configuration({
-    purgeOnStart: false,
-});
+import { Schema, model } from 'mongoose';
+import mongoose from 'mongoose';
 
 import { Dataset } from 'crawlee';
-import { MongoClient } from 'mongodb';
+
+const VideoSchema = new Schema(
+    {
+        info: {
+            type: Schema.Types.Mixed,
+            required: true,
+        },
+        url: { type: String, index: true, unique: true },
+        title: { type: String },
+    },
+    {
+        timestamps: true,
+    }
+);
+
+export const VideoModel = model('Video', VideoSchema);
 
 async function sync(): Promise<void> {
-    const client = new MongoClient('mongodb://mongodb:27017');
-    await client.connect();
-
-    const db = client.db('crawlee');
-    const resultsCollection = db.collection('video');
-
+    await mongoose.connect('mongodb://mongodb:27017/crawlee');
     console.log("Connected to MongoDB");
-
-    await resultsCollection.createIndex({ url: 1 }, { unique: true });
 
     const dataset = await Dataset.open();
     const data = await dataset.getData();
 
-    await resultsCollection.insertMany(data.items);
+    await VideoModel.bulkWrite(
+        data.items.map(item => ({
+            updateOne: {
+                filter: { url: item.url },
+                update: {
+                    $set: item,
+                },
+                upsert: true,
+            },
+        }))
+    );
 
-    client.close();
+    await mongoose.disconnect();
 }
 
 sync().catch(err => console.error("Sync failed:", err));
