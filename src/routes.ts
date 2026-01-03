@@ -87,8 +87,14 @@ router.addHandler('detail', async ({ request, page, log, pushData }) => {
         return result;
     });
 
+    const thumbnailUrl = await page.$eval(
+        'div.fp-poster > img',
+        img => img.getAttribute('src')
+    );
+
     await pushData({
         url: request.loadedUrl,
+        thumbnail_url: thumbnailUrl,
         title,
         info,
     });
