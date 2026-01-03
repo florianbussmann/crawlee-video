@@ -7,9 +7,14 @@ import 'dotenv/config';
 
 const startUrl = process.env.CRAWL_TARGET;
 
+const maxRequestsPerMinute = Number(process.env.MAX_REQUESTS_PER_MINUTE);
+
 const crawler = new PlaywrightCrawler({
     requestHandler: router,
-    maxRequestsPerCrawl: 16,
+    maxRequestsPerCrawl: parseInt(process.env.MAX_REQUEST_PER_CRAWL || "24"),
+    ...(Number.isFinite(maxRequestsPerMinute) && {
+        maxRequestsPerMinute,
+    }),
 });
 
 await crawler.run([startUrl!]);

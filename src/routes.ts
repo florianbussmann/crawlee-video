@@ -41,6 +41,11 @@ router.addDefaultHandler(async ({ enqueueLinks, page, request, log }) => {
         clicks++;
     }
 
+    await enqueueLinks({
+        selector: process.env.PAGINATION_SELECTOR || 'div.pagination-holder > ul > li.next > a[data-action="ajax"]',
+        label: 'PAGINATION',
+    });
+
     log.info(`enqueueing new URLs`);
     await enqueueLinks({
         selector: itemSelector,
